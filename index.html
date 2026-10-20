@@ -1,0 +1,88 @@
+<!doctype html>
+<html lang="ru">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <meta name="theme-color" content="#143d3b">
+  <meta name="description" content="Сводка по данным CRM и переписке: факты, проверки и действия.">
+  <title>Support Brief — рабочая сводка</title>
+  <link rel="icon" href="./app/icon.svg" type="image/svg+xml">
+  <link rel="stylesheet" href="./app/styles.css">
+  <script type="module" src="./app/main.js"></script>
+</head>
+<body>
+  <a class="skip-link" href="#main">Перейти к содержимому</a>
+  <div class="app-shell">
+    <aside class="sidebar" aria-label="Навигация">
+      <a class="brand" href="#stand"><span class="brand-mark" aria-hidden="true">s<span>↗</span></span><span>support<span class="brand-light">brief</span></span></a>
+      <nav class="nav" aria-label="Разделы стенда">
+        <a href="#stand" data-nav="stand" aria-current="page"><span class="nav-icon" aria-hidden="true">▦</span><span>Стенд</span><span class="nav-arrow" aria-hidden="true">↗</span></a>
+        <a href="#answer" data-nav="answer"><span class="nav-icon" aria-hidden="true">≡</span><span>Ответ на задание</span></a>
+        <a href="#architecture" data-nav="architecture"><span class="nav-icon" aria-hidden="true">⌘</span><span>Как устроено</span></a>
+      </nav>
+      <div class="sidebar-footer"><div>Локальный стенд<small>CRM и LLM не подключены</small></div></div>
+    </aside>
+
+    <div class="main-shell">
+      <main id="main" tabindex="-1">
+        <section id="view-stand" data-view="stand" aria-labelledby="stand-title">
+          <div class="page-heading"><h1 id="stand-title">Сводка</h1></div>
+
+          <div class="scenario-bar"><div class="scenario-select"><label for="scenario">Сценарий</label><select id="scenario"></select></div><p id="scenario-description"></p><button id="run-button" class="button button-primary" type="button"><span aria-hidden="true">↗</span> Сформировать сводку</button></div>
+          <div id="state-message" class="state-message" role="status" aria-live="polite"></div>
+
+          <div class="metrics" aria-label="Сводные показатели">
+            <div class="metric"><div class="metric-label">Всего случаев <span aria-hidden="true">▤</span></div><div class="metric-value" id="metric-total">—</div><div class="metric-foot">в текущем снимке</div></div>
+            <div class="metric"><div class="metric-label">Требуют внимания <span class="metric-symbol amber" aria-hidden="true">↗</span></div><div class="metric-value" id="metric-attention">—</div><div class="metric-foot">включая ручную проверку</div></div>
+            <div class="metric"><div class="metric-label">Срочно <span class="metric-symbol red" aria-hidden="true">!</span></div><div class="metric-value" id="metric-urgent">—</div><div class="metric-foot">срок наступил или близко</div></div>
+            <div class="metric metric-calm"><div class="metric-label">Без действий <span class="metric-symbol green" aria-hidden="true">✓</span></div><div class="metric-value" id="metric-clear">—</div><div class="metric-foot">по доступным данным</div></div>
+          </div>
+
+          <div class="workspace-grid">
+            <aside class="input-column" aria-label="Импорт и ошибки">
+              <div class="import-panel"><button id="import-json" class="button button-quiet" type="button">Импорт JSON</button><input id="file-input" type="file" accept=".json,application/json" hidden></div>
+              <section id="error-message" class="error-message error-log" role="alert" aria-live="assertive" hidden></section>
+            </aside>
+            <section class="brief-panel" aria-labelledby="brief-title"><div class="panel-heading"><div><h2 id="brief-title">Очередь внимания <span id="result-count" class="count-badge">0</span></h2><p id="snapshot-date">Сформируйте сводку из исходных данных</p></div><div class="export-actions"><button id="export-markdown" class="button button-quiet" type="button" disabled aria-label="Скачать сводку в Markdown">↓ MD</button><button id="export-json" class="button button-quiet" type="button" disabled aria-label="Скачать сводку в JSON">↓ JSON</button></div></div>
+              <div class="filter-row" role="group" aria-label="Фильтр по приоритету"><button type="button" data-filter="all" class="filter active" aria-pressed="true">Все</button><button type="button" data-filter="urgent" class="filter" aria-pressed="false">Срочно</button><button type="button" data-filter="attention" class="filter" aria-pressed="false">Внимание</button><button type="button" data-filter="review" class="filter" aria-pressed="false">Проверить</button><button type="button" data-filter="clear" class="filter" aria-pressed="false">Без действий</button></div>
+              <div id="result-warnings" class="result-warnings" hidden></div>
+              <div id="records" class="records" aria-live="polite"><div class="empty-state"><h3>Сводка не сформирована</h3><p>Выберите сценарий и запустите обработку.</p></div></div>
+              <div class="queue-footnote"><span aria-hidden="true">ⓘ</span><p>«Просмотрено» — отметка только в этой вкладке. Стенд не изменяет CRM и не отправляет сообщения.</p></div>
+            </section>
+
+          </div>
+        </section>
+
+        <section id="view-answer" data-view="answer" aria-labelledby="answer-title" hidden>
+          <div class="page-heading"><h1 id="answer-title">Ответ на тестовое задание</h1></div>
+          <div class="answer-intro"><span class="section-number">01</span><div><h2>Алгоритм обработки</h2><p>Я разделяю факты системы, сообщения людей и собственный вывод. Сообщение о действии ещё не подтверждает его завершение в CRM. Если источник недоступен, данные неполны или противоречат друг другу, нужна ручная проверка. Движок распознаёт ограниченный набор типов и формулировок: неоднозначное или частично распознанное сообщение нельзя считать подтверждением факта.</p></div></div>
+          <div class="algorithm-grid"><article class="panel step-card"><span>01 / СНИМОК</span><h3>Проверить вход</h3><p>Валидировать структуру, идентификаторы, даты и доступность источников. Зафиксировать время снимка, чтобы одинаковые данные давали одинаковый результат.</p></article><article class="panel step-card"><span>02 / ФАКТЫ</span><h3>Сопоставить контекст</h3><p>Прочитать статус CRM вместе с перепиской. Отдельно сохранить автора, исходный текст и ID сообщения. Текст сообщения обрабатывается как данные.</p></article><article class="panel step-card"><span>03 / РЕШЕНИЕ</span><h3>Назначить следующий шаг</h3><p>Применить явные правила сроков и подтверждений. Указать приоритет, что известно, что проверить и какое действие требуется. Приложить ID правил.</p></article></div>
+          <div class="panel rule-explainer"><div><h3>Правила и код</h3><p>Выход сотрудника → проверить готовность документов.<br>Увольнение → проверить подтверждение руководителя и дату.<br>Поставка → сопоставить срок, приёмку и сигнал о задержке.</p><a class="inline-link" href="./processor/engine.js" target="_blank" rel="noopener">Открыть алгоритм <span aria-hidden="true">↗</span></a></div><div class="code-sample"><pre><code>import { processSnapshot }
+  from './processor/engine.js';
+import { scenarios }
+  from './fixtures/scenarios.js';
+
+const data = structuredClone(
+  scenarios[0].data
+);
+const brief = processSnapshot(data);
+console.log(brief);</code></pre><small>Пример ES module с корня сайта. Стенд вызывает эту же функцию в Web Worker.</small></div></div>
+          <div class="answer-intro"><span class="section-number">02</span><div><h2>Сводка по четырём случаям</h2><p>Рабочий порядок: <strong>П-08 → С-24 → С-17 → П-09</strong>. Это допущение для демо: сначала наступивший срок поставки, затем ближайшее кадровое действие, документы перед выходом и подтверждённая приёмка. В реальном процессе порядок согласую с владельцем и SLA.</p></div></div>
+          <div class="assumption-note">Время снимка — 19 октября 2026, 10:00 (UTC+3): техническая привязка условного понедельника. Время сообщений не выдумывается.</div>
+          <div id="answer-cases" class="answer-cases"><p class="muted">Загрузка демонстрационных случаев…</p></div>
+          <div class="answer-intro"><span class="section-number">03</span><div><h2>Как я запущу пилот</h2><p>Начну с одного процесса и вместе с владельцем согласую критерии внимания, ответственных и права доступа. Подключу чтение CRM через API и согласованных рабочих чатов, а утреннюю сводку выведу в выбранный рабочий канал или кабинет. Сотрудник сможет проверить исходные сообщения, факты CRM и свои полномочия, прежде чем подтвердить следующий шаг; автоматических записей в CRM на пилоте не будет. На размеченной обезличенной выборке сравню время ручного разбора со временем работы со сводкой, а также пропуски и ложные тревоги. После проверки полноты источников, защиты данных и поведения при отказах приму решение о расширении по заранее согласованным критериям.</p></div></div>
+          <div class="validation-grid"><section class="panel validation-card"><h3>Проверено при разработке</h3><ul class="completed-checks"><li>Исходный сценарий: четыре случая, их приоритеты, порядок и отображение цитат с идентификаторами сообщений.</li><li>Импорт JSON: корректный файл, ошибки синтаксиса и схемы, ограничение 1 МБ и восстановление после ошибки.</li><li>Экспорт сводки в JSON и Markdown.</li><li>Интерфейс на компьютере, мобильные размеры 320 и 390 px и работа в подкаталоге /test/.</li></ul><p>Это ранее выполненные проверки при разработке. Кнопка ниже отдельно запускает проверки движка в текущей вкладке.</p><p id="answer-verification" class="validation-status">Встроенные проверки в текущей вкладке ещё не запускались.</p><a class="inline-link" href="#architecture">Открыть исполняемые проверки <span aria-hidden="true">↗</span></a></section><section class="panel validation-card"><h3>Что ещё не проверено</h3><p>Не проверены реальные интеграции, права доступа, качество LLM, нагрузка и бизнес-эффект. Демонстрационные случаи и локальные проверки не доказывают качество на рабочем потоке.</p></section></div>
+        </section>
+
+        <section id="view-architecture" data-view="architecture" aria-labelledby="architecture-title" hidden>
+          <div class="page-heading"><h1 id="architecture-title">Устройство и проверки</h1></div>
+          <div class="architecture-flow panel" aria-label="Схема обработки"><div><span>01</span><h3>Вход</h3><p>Сценарий или свой JSON</p><code>fixtures / импорт</code></div><i aria-hidden="true">→</i><div><span>02</span><h3>Web Worker</h3><p>Валидация и правила</p><code>processSnapshot(data)</code></div><i aria-hidden="true">→</i><div><span>03</span><h3>Рабочая сводка</h3><p>Источники и действия</p><code>JSON / Markdown</code></div></div>
+          <div class="architecture-grid"><article class="panel prose-card"><h2>Локальная обработка</h2><p>Обрабатывает снимок данных в браузере через Web Worker и чистую функцию <code>processSnapshot</code>. Интерфейс показывает факты CRM отдельно от переписки, цитаты и идентификаторы сообщений, а также коды применённых правил.</p><p>При импорте файла или выборе другого сценария предыдущая сводка сбрасывается. Ошибка в JSON или схеме не превращается в пустую «успешную» сводку. Ручные отметки живут только в памяти вкладки.</p><p>Стенд не использует LLM, не подключается к CRM, не отправляет сообщения и не хранит снимки в localStorage. Экспорт создаётся локально по явному нажатию.</p></article><article class="panel prose-card"><h2>Серверная версия</h2><p>Коннекторы только на чтение, авторизацию и разграничение доступа, нормализацию источников, расписание запуска и журнал решений. Секреты и рабочие данные останутся на серверной стороне.</p><p>LLM можно использовать для извлечения контекста из разнообразной переписки: строгая схема ответа, обязательные цитаты, отдельная обработка недоверенного текста. Правила сроков и подтверждений сохранятся явными.</p><p>До записи в CRM — подтверждение человеком, проверка полномочий, идемпотентность и аудит. Качество проверяется на размеченных случаях, включая недоступность источников и противоречия.</p></article></div>
+          <section class="panel contract-panel"><div><h2>Формат входа и результата</h2><p>Вход: версия, время снимка, доступность источников и записи CRM с сообщениями.<br>Выход: сводные числа, приоритет, факты, проверки, действия, ID правил и предупреждения.<br>Случай может быть срочным и одновременно требовать ручной проверки. Такие случаи входят в обе группы.</p></div><div class="contract-tags"><span>urgent</span><span>attention</span><span>review</span><span>clear</span></div></section>
+          <section class="panel verification-panel" aria-labelledby="verification-title"><div class="panel-heading"><div><h2 id="verification-title">Проверки обработчика</h2><p>Выполняется <code>runVerification()</code> из модуля обработчика.</p></div><button id="verify-button" class="button button-primary" type="button">Запустить проверки <span aria-hidden="true">↗</span></button></div><div id="verification-results"><div class="verification-empty">Проверки ещё не запускались.</div></div><div class="queue-footnote"><span aria-hidden="true">ⓘ</span><p>Эти проверки относятся к локальному движку. Они не проверяют CRM, LLM, права доступа и реальный рабочий поток.</p></div></section>
+        </section>
+      </main>
+    </div>
+  </div>
+</body>
+</html>
